@@ -6,9 +6,6 @@ LOCAL_PATH := device/SHARP/SG304SH
 # Inherit from the common Open Source product configuration
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 
-# Inherit some common CM stuff.
-$(call inherit-product, vendor/cm/config/common_full_phone.mk)
-
 #$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # Release name
@@ -39,13 +36,13 @@ PRODUCT_PACKAGES += \
     init.qcom.usb.sh
     
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/dt.img:dt.img \
-    $(LOCAL_PATH)/kernel:kernel \
-    $(LOCAL_PATH)/twrp.fstab:root/etc/twrp.fstab
+    $(LOCAL_PATH)/prebuilt/dt.img:dt.img \
+    $(LOCAL_PATH)/prebuilt/kernel:kernel \
+    $(LOCAL_PATH)/fstab/twrp.fstab:root/etc/twrp.fstab
 
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := SG304SH
-PRODUCT_NAME := cm_SG304SH
+PRODUCT_NAME := omni_SG304SH
 PRODUCT_BRAND := SG
 PRODUCT_MODEL := 304SH
 PRODUCT_MANUFACTURER := SHARP

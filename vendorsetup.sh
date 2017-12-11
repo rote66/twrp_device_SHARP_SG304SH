@@ -1,1 +1,1 @@
-add_lunch_combo cm_SG304SH-userdebug
+add_lunch_combo omni_SG304SH-userdebug

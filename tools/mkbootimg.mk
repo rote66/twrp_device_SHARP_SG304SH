@@ -1,12 +1,13 @@
 LOCAL_PATH := $(call my-dir)
+DEVICE_PATH := device/SHARP/SG304SH
 
 uncompressed_ramdisk := $(PRODUCT_OUT)/ramdisk.cpio
 $(uncompressed_ramdisk): $(INSTALLED_RAMDISK_TARGET)
 	zcat $< > $@
 
 DTBTOOL := $(LOCAL_PATH)/mkbootimg_dtb
-KERNEL := $(LOCAL_PATH)/kernel
-DTB := $(LOCAL_PATH)/dt.img
+KERNEL := $(DEVICE_PATH)/prebuilt/kernel
+DTB := $(DEVICE_PATH)/prebuilt/dt.img
 
 INSTALLED_BOOTIMAGE_TARGET := $(PRODUCT_OUT)/boot.img
 INSTALLED_RECOVERYIMAGE_TARGET := $(PRODUCT_OUT)/recovery.img
