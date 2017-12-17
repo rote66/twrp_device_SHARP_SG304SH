@@ -38,13 +38,24 @@ fi
 start_sensors()
 {
     if [ -c /dev/msm_dsps -o -c /dev/sensors ]; then
-        chmod -h 775 /persist/sensors
-        chmod -h 664 /persist/sensors/sensors_settings
-        chown -h system.root /persist/sensors/sensors_settings
+        mkdir -p /data/system/sensors
+        chown -h system.system /data/system/sensors
+        restorecon -r /data/system/sensors
+        touch /data/system/sensors/settings
+        chmod -h 775 /data/system/sensors
+        chmod -h 664 /data/system/sensors/settings
+        chown -h system /data/system/sensors/settings
 
         mkdir -p /data/misc/sensors
         chmod -h 775 /data/misc/sensors
+        mkdir -p /persist/misc/sensors
+        chmod 775 /persist/misc/sensors
 
+        if [ ! -s /data/system/sensors/settings ]; then
+            # If the settings file is empty, enable sensors HAL
+            # Otherwise leave the file with it's current contents
+            echo 1 > /data/system/sensors/settings
+        fi
         start sensors
     fi
 }
@@ -70,18 +81,27 @@ start_charger_monitor()
 {
 	if ls /sys/module/qpnp_charger/parameters/charger_monitor; then
 		chown -h root.system /sys/module/qpnp_charger/parameters/*
-		chown -h root.system /sys/class/power_supply/battery/input_current_max
-		chown -h root.system /sys/class/power_supply/battery/input_current_trim
-		chown -h root.system /sys/class/power_supply/battery/input_current_settled
-		chown -h root.system /sys/class/power_supply/battery/voltage_min
-		chmod -h 0664 /sys/class/power_supply/battery/input_current_max
-		chmod -h 0664 /sys/class/power_supply/battery/input_current_trim
-		chmod -h 0664 /sys/class/power_supply/battery/input_current_settled
-		chmod -h 0664 /sys/class/power_supply/battery/voltage_min
-		chmod -h 0664 /sys/module/qpnp_charger/parameters/charger_monitor
+		chown root.system /sys/class/power_supply/battery/input_current_max
+		chown root.system /sys/class/power_supply/battery/input_current_trim
+		chown root.system /sys/class/power_supply/battery/input_current_settled
+		chown root.system /sys/class/power_supply/battery/voltage_min
+		chmod 0664 /sys/class/power_supply/battery/input_current_max
+		chmod 0664 /sys/class/power_supply/battery/input_current_trim
+		chmod 0664 /sys/class/power_supply/battery/input_current_settled
+		chmod 0664 /sys/class/power_supply/battery/voltage_min
+		chmod 0664 /sys/module/qpnp_charger/parameters/charger_monitor
 		start charger_monitor
 	fi
 }
+
+start_copying_prebuilt_qcril_db()
+{
+    if [ -f /system/vendor/qcril.db -a ! -f /data/misc/radio/qcril.db ]; then
+        cp /system/vendor/qcril.db /data/misc/radio/qcril.db
+        chown -h radio.radio /data/misc/radio/qcril.db
+    fi
+}
+
 
 baseband=`getprop ro.baseband`
 #
@@ -100,7 +120,18 @@ case "$baseband" in
         ;;
 esac
 
-start_sensors
+# start sensor related operation when the device is not X5
+if [ $(getprop ro.boot.hwversion | grep -e 5[0-9]) ]; then
+    /system/bin/log -p e -t "SensorSelect" "Device is X5, not call 'start_sensors'"
+else
+    /system/bin/log -p e -t "SensorSelect" "Device is not X5, call 'start_sensors'"
+    start_sensors
+fi
+
+if [ $(getprop ro.boot.hwversion | grep -e 4[0-9]) ]; then
+    echo 20 > /sys/class/leds/button-backlight/max_brightness
+    echo 20 > /sys/class/leds/button-backlight1/max_brightness
+fi
 
 case "$target" in
     "msm7630_surf" | "msm7630_1x" | "msm7630_fusion")
@@ -165,3 +196,20 @@ case "$target" in
         start_charger_monitor
         ;;
 esac
+
+bootmode=`getprop ro.bootmode`
+emmc_boot=`getprop ro.boot.emmc`
+case "$emmc_boot"
+    in "true")
+        if [ "$bootmode" != "charger" ]; then # start rmt_storage and rfs_access
+            start rmt_storage
+            start rfs_access
+        fi
+    ;;
+esac
+
+#
+# Copy qcril.db if needed for RIL
+#
+start_copying_prebuilt_qcril_db
+echo 1 > /data/misc/radio/db_check_done

@@ -1,0 +1,28 @@
+service sbinqseecomd /sbin/qseecomd
+    oneshot
+    disabled
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+on boot
+    write /sys/devices/system/cpu/cpu0/online 1
+    write /sys/devices/system/cpu/cpu1/online 1
+    write /sys/devices/system/cpu/cpu2/online 1
+    write /sys/devices/system/cpu/cpu3/online 1
+    write /proc/touchpanel/double_tap_enable 1
+    write /sys/class/leds/red/trigger "battery-charging"
+    write /sys/class/leds/green/trigger "battery-full"
+    write /proc/s1302/key_rep 1
+    write /proc/touchpanel/keypad_enable 0
+    write /sys/module/msm_thermal/core_control/enabled 1
+    write /sys/module/msm_thermal/parameters/enabled 1
+    
+on fs
+    chmod 0660 /dev/qseecom
+    chown system drmrpc /dev/qseecom
+    chmod 0664 /dev/ion
+    chown system system /dev/ion
+
+on property:ro.crypto.state=encrypted
+    start sbinqseecomd

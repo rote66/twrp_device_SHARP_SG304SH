@@ -19,27 +19,6 @@ PRODUCT_PACKAGES += charger charger_res_images
 
 include $(call all-subdir-makefiles)
 
-PRODUCT_COPY_FILES += \
-	$(LOCAL_PATH)/recovery/root/ueventd.qcom.rc:root/ueventd.qcom.rc \
-	$(LOCAL_PATH)/recovery/root/fstab.qcom:root/fstab.qcom
-
-# Ramdisk
-PRODUCT_PACKAGES += \
-    fstab.qcom \
-    init.qcom.rc \
-    init.target.rc \
-    init.qcom.usb.rc \
-    ueventd.qcom.rc \
-    init.qcom.early_boot.sh \
-    init.qcom.factory.sh \
-    init.qcom.sh \
-    init.qcom.usb.sh
-    
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/prebuilt/dt.img:dt.img \
-    $(LOCAL_PATH)/prebuilt/kernel:kernel \
-    $(LOCAL_PATH)/fstab/twrp.fstab:root/etc/twrp.fstab
-
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := SG304SH
 PRODUCT_NAME := omni_SG304SH

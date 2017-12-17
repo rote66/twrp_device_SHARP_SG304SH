@@ -208,4 +208,3 @@ dev_file=/dev/graphics/fb$fb_cnt
     fi
   fi
 done
-
