@@ -21,6 +21,6 @@ CPU:MSM8974AB-PRO
 ---------------
 ##Known issue:
 
-- external_sd can not read/write (kernel bug?)
+- you tell me
 
 By wyk
