@@ -14,9 +14,6 @@ PRODUCT_RELEASE_NAME := SG304SH
 TARGET_SCREEN_HEIGHT := 1920
 TARGET_SCREEN_WIDTH := 1080
 
-# Charger
-PRODUCT_PACKAGES += charger charger_res_images
-
 include $(call all-subdir-makefiles)
 
 ## Device identifier. This must come after all inclusions
@@ -30,15 +27,3 @@ PRODUCT_MANUFACTURER := SHARP
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.build.product=304SH \
     ro.product.device=SG304SH
-    
-# These additionals go to /default.prop
-ADDITIONAL_DEFAULT_PROPERTIES += ro.secure=0 \
-ro.allow.mock.location=1 \
-ro.debuggable=1 \
-ro.adb.secure=0 \
-service.adb.root=1 \
-ro.sf.lcd_density=320 \
-ro.sys.usb.storage.type=mtp,adb \
-persist.sys.timezone=Asia/Shanghai \
-ro.xtreme.team.romer=wanyikai0791 \
-ro.xar.team.romer=wanyikai0791
